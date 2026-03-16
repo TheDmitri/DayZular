@@ -224,7 +224,7 @@ DayZular/
 
 ## Companion Mod: DayZular_Examples
 
-A separate `DayZular_Examples` mod is available demonstrating all framework features with a complete Barter Trader UI example. Load it alongside DayZular to see the framework in action.
+A separate `DayZular_Examples` mod will be available soon demonstrating all framework features. Load it alongside DayZular to see the framework in action.
 
 ---
 
