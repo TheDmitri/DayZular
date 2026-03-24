@@ -23,7 +23,7 @@ class DZlrServiceRegistry
         if (!s_Instance)
         {
             s_Instance = new DZlrServiceRegistry();
-            Print("DZlrServiceRegistry initialized");
+             DZLog().LogDebug("DZlrServiceRegistry initialized");
         }
         return s_Instance;
     }
@@ -31,7 +31,7 @@ class DZlrServiceRegistry
     void RegisterService(typename type, DayZularService service)
     {
         m_Services.Set(type, service);
-        Print("Service registered: " + type.ToString());
+         DZLog().LogDebug("Service registered: " + type.ToString());
     }
     
     DayZularService GetService(typename type)

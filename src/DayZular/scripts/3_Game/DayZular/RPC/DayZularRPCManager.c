@@ -303,7 +303,7 @@ class DayZularRPCManagerGlobal
     }
     
     // Send RPC (like CF's SendRPC)
-    void SendRPC(string modNamespace, string endpoint, Param params, bool guaranteed, PlayerIdentity recipient)
+    void SendRPC(string modNamespace, string endpoint, Param params, bool guaranteed = true, PlayerIdentity recipient = null)
     {
         string recipientName = "ALL";
         if (recipient)

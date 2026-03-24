@@ -44,7 +44,7 @@ void OnDataReceived(PlayerIdentity sender, ParamsReadContext ctx)
 {
     Param1<string> data;
     if (ctx.Read(data))
-        Print("Received: " + data.param1);
+         DZLog().LogDebug("Received: " + data.param1);
 }
 ```
 
@@ -71,13 +71,13 @@ void OnPlayerDataReceived(bool success, ParamsReadContext ctx)
 {
     if (!success)
     {
-        Print("Request failed or timed out!");
+         DZLog().LogDebug("Request failed or timed out!");
         return;
     }
     
     Param1<ref PlayerData> data;
     if (ctx.Read(data))
-        Print("Got player data: " + data.param1.name);
+         DZLog().LogDebug("Got player data: " + data.param1.name);
 }
 
 // SERVER: Handle request and send response

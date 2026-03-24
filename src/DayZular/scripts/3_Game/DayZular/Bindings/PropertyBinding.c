@@ -19,6 +19,11 @@ class PropertyBinding
         // Override in child classes
     }
     
+    Widget GetWidget()
+    {
+        return m_Widget;
+    }
+    
     protected string EvaluateExpression(DZlrComponentBase component, string expr)
     {
         // Expression evaluator
@@ -594,7 +599,7 @@ class ProgressBarPropertyBinding extends PropertyBinding
             string strValue = EvaluateExpression(component, m_BindingExpression);
             int intValue = strValue.ToInt();
             float floatValue = intValue * 1.0;
-            Print("[ProgressBarPropertyBinding] Expression: " + m_BindingExpression + " strValue: " + strValue + " intValue: " + intValue + " Setting current: " + floatValue);
+             DZLog().LogDebug("[ProgressBarPropertyBinding] Expression: " + m_BindingExpression + " strValue: " + strValue + " intValue: " + intValue + " Setting current: " + floatValue);
             progressBar.SetCurrent(floatValue);
         }
         else

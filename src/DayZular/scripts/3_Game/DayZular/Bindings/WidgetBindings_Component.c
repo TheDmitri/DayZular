@@ -45,7 +45,7 @@ class ComponentWidgetBinding : WidgetBindingBase
         
         ForEachBinding binding = new ForEachBinding(widget, "foreach", Component_ForEach, Component_Template, itemProperty, m_Component);
         
-        Print("ComponentWidgetBinding: Created ForEachBinding: " + Component_Template);
+         DZLog().LogDebug("ComponentWidgetBinding: Created ForEachBinding: " + Component_Template);
         return binding;
     }
     
@@ -61,7 +61,7 @@ class ComponentWidgetBinding : WidgetBindingBase
         
         ComponentBinding binding = new ComponentBinding(widget, "component", Component_Selector, m_Component);
         
-        Print("ComponentWidgetBinding: Created ComponentBinding: " + Component_Selector);
+         DZLog().LogDebug("ComponentWidgetBinding: Created ComponentBinding: " + Component_Selector);
         return binding;
     }
 }

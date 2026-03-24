@@ -100,7 +100,7 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
     // Initialize component with widget
     void InitComponent(Widget root)
     {
-        Print("[DayZular] InitComponent: Starting initialization for " + this.Type().ToString());
+         DZLog().LogDebug("[DayZular] InitComponent: Starting initialization for " + this.Type().ToString());
         
         if (m_IsInitialized)
         {
@@ -140,7 +140,7 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
         AttachEventBindings();
         
         // NEW: Auto-create bindings from layout (Param)
-        Print("[DayZular] InitComponent: About to call AutoCreateBindings for " + this.Type().ToString());
+         DZLog().LogDebug("[DayZular] InitComponent: About to call AutoCreateBindings for " + this.Type().ToString());
         AutoCreateBindings();
         
         // OLD: Manual binding creation (still supported for backward compatibility)
@@ -186,7 +186,7 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
                     widget.SetHandler(handler);
                 }
                 
-                Print("Attached WidgetBinding to widget: " + widget.GetName());
+                 DZLog().LogDebug("Attached WidgetBinding to widget: " + widget.GetName());
             }
             else
             {
@@ -196,7 +196,7 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
                 {
                     legacyBinding.SetComponent(this);
                     widget.SetHandler(legacyBinding.GetHandler());
-                    Print("Attached ComponentEventBinding (legacy) to widget: " + widget.GetName());
+                     DZLog().LogDebug("Attached ComponentEventBinding (legacy) to widget: " + widget.GetName());
                 }
             }
         }
@@ -279,7 +279,7 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
     // Update all bindings
     void UpdateBindings()
     {
-        Print("[DayZular] UpdateBindings: Updating " + m_Bindings.Count() + " bindings for component");
+         DZLog().LogDebug("[DayZular] UpdateBindings: Updating " + m_Bindings.Count() + " bindings for component");
         foreach (PropertyBinding binding : m_Bindings)
         {
             binding.Update(this);
@@ -365,13 +365,13 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
                 m_Inputs.Set(inputName, null);
                 inputCount++;
                 
-                Print("Found input: " + varName + " -> " + inputName);
+                 DZLog().LogDebug("Found input: " + varName + " -> " + inputName);
             }
         }
         
         if (inputCount > 0)
         {
-            Print("Auto-detected " + inputCount + " inputs for " + type.ToString());
+             DZLog().LogDebug("Auto-detected " + inputCount + " inputs for " + type.ToString());
         }
     }
     
@@ -384,7 +384,7 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
         
         if (bindingCount > 0)
         {
-            Print("[DayZular] Auto-created " + bindingCount + " bindings for: " + m_Root.GetName());
+             DZLog().LogDebug("[DayZular] Auto-created " + bindingCount + " bindings for: " + m_Root.GetName());
         }
     }
     
@@ -394,19 +394,21 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
         
         int count = 0;
         
+        string widgetName = widget.GetName();
+        
         // Check for unified widget bindings
         Class bindingScript;
         widget.GetScript(bindingScript);
         
         if (bindingScript)
         {
-            Print("[DayZular] AutoCreateBindings: Widget " + widget.GetName() + " has script: " + bindingScript.Type().ToString());
+             DZLog().LogDebug("[DayZular] AutoCreateBindings: Widget " + widgetName + " has script: " + bindingScript.Type().ToString());
             
             // Try unified widget bindings (handles both data and events)
             WidgetBindingBase widgetBinding = WidgetBindingBase.Cast(bindingScript);
             if (widgetBinding)
             {
-                Print("[DayZular] AutoCreateBindings: Found WidgetBinding on widget: " + widget.GetName() + " (type: " + bindingScript.Type().ToString() + ")");
+                 DZLog().LogDebug("[DayZular] AutoCreateBindings: Found WidgetBinding on widget: " + widgetName + " (type: " + bindingScript.Type().ToString() + ")");
                 
                 // Set component first!
                 widgetBinding.SetComponent(this);
@@ -416,29 +418,32 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
                 {
                     m_Bindings.Insert(dataBinding);
                     count++;
-                    Print("[DayZular] AutoCreateBindings: Created data binding for widget: " + widget.GetName());
+                     DZLog().LogDebug("[DayZular] AutoCreateBindings: Created data binding for widget: " + widgetName);
                 }
                 else
                 {
-                    Print("[DayZular] AutoCreateBindings: No data binding created for widget: " + widget.GetName() + " - Binding_Expression may be empty");
+                     DZLog().LogDebug("[DayZular] AutoCreateBindings: No data binding created for widget: " + widgetName + " - Binding_Expression may be empty");
                 }
             }
             else
             {
-                Print("[DayZular] AutoCreateBindings: Widget " + widget.GetName() + " script is not a WidgetBindingBase");
+                 DZLog().LogDebug("[DayZular] AutoCreateBindings: Widget " + widgetName + " script is not a WidgetBindingBase");
             }
-        }
-        else
-        {
-            Print("[DayZular] AutoCreateBindings: Widget " + widget.GetName() + " has no script");
         }
         
         // Recurse children
         Widget child = widget.GetChildren();
+        int childCount = 0;
         while (child)
         {
+            childCount++;
             count += AutoCreateBindingsRecursive(child);
             child = child.GetSibling();
+        }
+        
+        if (childCount > 0)
+        {
+             DZLog().LogDebug("[DayZular] AutoCreateBindings: Widget " + widgetName + " has " + childCount + " children");
         }
         
         return count;

@@ -47,7 +47,7 @@ class FormGroup
     {
         m_Valid = true;
         
-        Print("FormGroup: Validating form: " + m_Name);
+         DZLog().LogDebug("FormGroup: Validating form: " + m_Name);
         
         // Validate each control
         foreach (string name, FormControl control : m_Controls)
@@ -56,7 +56,7 @@ class FormGroup
             if (!control.IsValid())
             {
                 m_Valid = false;
-                Print("FormGroup: Control '" + name + "' is invalid: " + control.GetFirstError());
+                 DZLog().LogDebug("FormGroup: Control '" + name + "' is invalid: " + control.GetFirstError());
             }
         }
         
@@ -66,11 +66,11 @@ class FormGroup
             if (!validator.Validate(this))
             {
                 m_Valid = false;
-                Print("FormGroup: Group validation failed");
+                 DZLog().LogDebug("FormGroup: Group validation failed");
             }
         }
         
-        Print("FormGroup: Validation result: " + m_Valid);
+         DZLog().LogDebug("FormGroup: Validation result: " + m_Valid);
         return m_Valid;
     }
     

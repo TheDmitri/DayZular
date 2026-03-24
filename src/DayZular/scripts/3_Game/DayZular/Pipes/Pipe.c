@@ -258,6 +258,6 @@ class PipeRegistry
         RegisterPipe("json", new JsonPipe());
         RegisterPipe("time", new TimePipe());
         
-        Print("Default pipes registered (12 pipes)");
+         DZLog().LogDebug("Default pipes registered (12 pipes)");
     }
 }

@@ -326,15 +326,139 @@ class ItemPreviewBinding : WidgetBindingBase
 {
     // Visible in Workbench
     reference string Binding_Item;
+    reference int Enable_Rotation;
+    reference int Enable_Scale;
+    
+    // Internal state for rotation and scale
+    protected int m_RotX;
+    protected int m_RotY;
+    protected vector m_Orientation;
+    protected float m_Scale;
     
     override PropertyBinding CreateDataBinding(Widget widget)
     {
         if (Binding_Item && Binding_Item != "")
         {
             m_DataBinding = new ItemPreviewPropertyBinding(widget, "item", Binding_Item);
+            
+            // Initialize rotation and scale if enabled
+            if (Enable_Rotation == 1 || Enable_Scale == 1)
+            {
+                m_Orientation = vector.Zero;
+                m_Scale = 0;
+                m_Handler = new ItemPreviewEventHandler(this, widget);
+            }
+            
             return m_DataBinding;
         }
         return null;
+    }
+    
+    bool IsRotationEnabled()
+    {
+        return Enable_Rotation == 1;
+    }
+    
+    bool IsScaleEnabled()
+    {
+        return Enable_Scale == 1;
+    }
+    
+    void UpdateRotation(int mouse_x, int mouse_y, bool is_dragging)
+    {
+        if (!IsRotationEnabled())
+            return;
+        
+        ItemPreviewWidget preview = ItemPreviewWidget.Cast(m_DataBinding.GetWidget());
+        if (!preview)
+            return;
+            
+        vector orientation = m_Orientation;
+        orientation[0] = orientation[0] + (m_RotY - mouse_y);
+        orientation[1] = orientation[1] - (m_RotX - mouse_x);
+        
+        preview.SetModelOrientation(orientation);
+        
+        if (!is_dragging)
+            m_Orientation = orientation;
+    }
+    
+    void UpdateScale(int wheel, ItemPreviewWidget preview)
+    {
+        if (!IsScaleEnabled() || !preview)
+            return;
+            
+        float w, h, x, y;
+        preview.GetPos(x, y);
+        preview.GetSize(w, h);
+        
+        float oldW = w;
+        float oldH = h;
+        
+        m_Scale = wheel;
+        w = w + (m_Scale / 4);
+        h = h + (m_Scale / 4);
+        
+        if (w > 0.5 && w < 3)
+        {
+            // Calculate size difference to keep centered
+            float deltaW = w - oldW;
+            float deltaH = h - oldH;
+            
+            preview.SetSize(w, h);
+            
+            // Adjust position to keep centered
+            float new_x = x - (deltaW / 2);
+            float new_y = y - (deltaH / 2);
+            preview.SetPos(new_x, new_y);
+        }
+    }
+    
+    void SetRotationStart(int x, int y)
+    {
+        m_RotX = x;
+        m_RotY = y;
+    }
+}
+
+// Event handler for ItemPreview rotation and scale
+class ItemPreviewEventHandler : ScriptedWidgetEventHandler
+{
+    protected ItemPreviewBinding m_Binding;
+    protected ItemPreviewWidget m_Preview;
+    
+    void ItemPreviewEventHandler(ItemPreviewBinding binding, Widget widget)
+    {
+        m_Binding = binding;
+        m_Preview = ItemPreviewWidget.Cast(widget);
+        
+        if (m_Preview)
+        {
+            m_Preview.SetHandler(this);
+        }
+    }
+    
+    override bool OnMouseButtonDown(Widget w, int x, int y, int button)
+    {
+        if (!m_Binding || !m_Binding.IsRotationEnabled() || w != m_Preview)
+            return false;
+            
+        GetGame().GetDragQueue().Call(m_Binding, "UpdateRotation");
+        
+        int mouse_x, mouse_y;
+        GetMousePos(mouse_x, mouse_y);
+        m_Binding.SetRotationStart(mouse_x, mouse_y);
+        
+        return true;
+    }
+    
+    override bool OnMouseWheel(Widget w, int x, int y, int wheel)
+    {
+        if (!m_Binding || !m_Binding.IsScaleEnabled() || w != m_Preview)
+            return false;
+            
+        m_Binding.UpdateScale(wheel, m_Preview);
+        return true;
     }
 }
 
@@ -422,7 +546,7 @@ class EditBoxBinding : WidgetBindingBase
         if (!m_Component || !Form_Validators || Form_Validators == "")
             return;
         
-        Print("EditBoxBinding: Auto-creating FormControl with validators: " + Form_Validators);
+         DZLog().LogDebug("EditBoxBinding: Auto-creating FormControl with validators: " + Form_Validators);
         
         // Get or auto-create FormGroup
         FormGroup formGroup = GetOrCreateFormGroup();
@@ -471,7 +595,7 @@ class EditBoxBinding : WidgetBindingBase
         SetFormControl(control);
         AutoBindErrorLabel();
         
-        Print("EditBoxBinding: Auto-created FormControl: " + controlName);
+         DZLog().LogDebug("EditBoxBinding: Auto-created FormControl: " + controlName);
     }
     
     // Get existing FormGroup or auto-create one
@@ -497,17 +621,17 @@ class EditBoxBinding : WidgetBindingBase
         // Try to set on most common property names
         if (EnScript.SetClassVar(m_Component, "m_ListingForm", 0, formGroup))
         {
-            Print("EditBoxBinding: Auto-created m_ListingForm");
+             DZLog().LogDebug("EditBoxBinding: Auto-created m_ListingForm");
             return formGroup;
         }
         if (EnScript.SetClassVar(m_Component, "m_Form", 0, formGroup))
         {
-            Print("EditBoxBinding: Auto-created m_Form");
+             DZLog().LogDebug("EditBoxBinding: Auto-created m_Form");
             return formGroup;
         }
         if (EnScript.SetClassVar(m_Component, "m_FormGroup", 0, formGroup))
         {
-            Print("EditBoxBinding: Auto-created m_FormGroup");
+             DZLog().LogDebug("EditBoxBinding: Auto-created m_FormGroup");
             return formGroup;
         }
         
@@ -530,7 +654,7 @@ class EditBoxBinding : WidgetBindingBase
         if (!m_Component || !Form_Control_Name || Form_Control_Name == "")
             return;
             
-        Print("EditBoxBinding: Auto-binding FormControl: " + Form_Control_Name);
+         DZLog().LogDebug("EditBoxBinding: Auto-binding FormControl: " + Form_Control_Name);
         
         // Try to find FormGroup in component
         FormGroup formGroup;
@@ -562,7 +686,7 @@ class EditBoxBinding : WidgetBindingBase
                 // Also bind error label if it exists
                 AutoBindErrorLabel();
                 
-                Print("EditBoxBinding: Bound FormControl: " + Form_Control_Name);
+                 DZLog().LogDebug("EditBoxBinding: Bound FormControl: " + Form_Control_Name);
             }
             else
             {
@@ -594,7 +718,7 @@ class EditBoxBinding : WidgetBindingBase
                 if (errorLabel)
                 {
                     m_FormControl.BindErrorLabel(errorLabel);
-                    Print("EditBoxBinding: Bound error label: " + errorLabelName);
+                     DZLog().LogDebug("EditBoxBinding: Bound error label: " + errorLabelName);
                 }
             }
         }

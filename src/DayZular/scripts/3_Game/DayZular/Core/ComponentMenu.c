@@ -101,12 +101,12 @@ class ComponentMenu
         }
         s_AllMenus.Set(m_UIMenu, this);
         
-        Print("ComponentMenu created");
+        // DZLog().LogDebug("ComponentMenu created");
     }
     
     void ~ComponentMenu()
     {
-        Print("ComponentMenu destructor called");
+        // DZLog().LogDebug("ComponentMenu destructor called");
         
         // Cleanup
         if (m_UIMenu)
@@ -158,7 +158,7 @@ class ComponentMenu
             return;
         }
         
-        Print("Showing menu");
+        // DZLog().LogDebug("Showing menu");
         
         // Disable player control (freeze player)
         GetGame().GetMission().PlayerControlDisable(INPUT_EXCLUDE_ALL);
@@ -205,7 +205,7 @@ class ComponentMenu
             return;
         }
         
-        Print("Hiding menu");
+        // DZLog().LogDebug("Hiding menu");
         
         // Hide the root widget
         if (m_RootComponent && m_RootComponent.GetRoot())

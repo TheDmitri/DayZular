@@ -201,7 +201,7 @@ Widget widget = DZTernary<Widget>.If(condition, widgetA, widgetB);
 int value = DZTernaryInt.If(health > 0, health, 0);
 string text = DZTernaryString.If(isOnline, "Online", "Offline");
 bool result = DZTernaryBool.If(hasPermission, true, false);
-float speed = DZTernaryFloat.If(isSprinting, 5.0, 2.0);
+float speed = DZTernaryFloat.If(isS DZLog().LogDebuging, 5.0, 2.0);
 
 // Convenience functions (shorter syntax)
 int damage = TernaryInt(isCritical, 100, 50);

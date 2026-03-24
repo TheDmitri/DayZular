@@ -75,7 +75,7 @@ class ComponentBinding extends PropertyBinding
         
         m_CurrentComponent = component;
         
-        Print("ComponentBinding: Created component: " + selector);
+        // DZLog().LogDebug("ComponentBinding: Created component: " + selector);
     }
     
     void DestroyCurrentComponent()

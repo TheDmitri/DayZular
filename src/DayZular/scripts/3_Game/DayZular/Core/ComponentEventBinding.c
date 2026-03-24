@@ -154,7 +154,7 @@ class ComponentEventBinding : Managed
             return false;
         }
         
-        Print("Invoking method: " + methodName + " on " + m_Component.ToString());
+         DZLog().LogDebug("Invoking method: " + methodName + " on " + m_Component.ToString());
         
         bool result = false;
         

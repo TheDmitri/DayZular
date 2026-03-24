@@ -96,7 +96,7 @@ class MyComponent extends DZlrComponentBase
     
     void OnItemsChanged(DZCollectionChangedEventArgs args)
     {
-        Print("Collection changed: " + args.ChangedAction.ToString());
+         DZLog().LogDebug("Collection changed: " + args.ChangedAction.ToString());
     }
 }
 */

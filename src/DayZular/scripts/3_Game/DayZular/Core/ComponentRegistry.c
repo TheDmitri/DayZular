@@ -11,7 +11,7 @@ class ComponentRegistry
         if (!s_Components)
         {
             s_Components = new map<string, typename>();
-            Print("ComponentRegistry initialized");
+            // DZLog().LogDebug("ComponentRegistry initialized");
         }
         
         // Check if already registered
@@ -21,7 +21,7 @@ class ComponentRegistry
         }
         
         s_Components.Set(selector, componentType);
-        Print("Registered component: " + selector + " -> " + componentType.ToString());
+        DZLog().LogDebug("Registered component: " + selector + " -> " + componentType.ToString());
     }
     
     // Get component type by selector
@@ -61,7 +61,7 @@ class ComponentRegistry
             return null;
         }
         
-        Print("Created component instance: " + selector);
+         DZLog().LogDebug("Created component instance: " + selector);
         return component;
     }
     
@@ -90,8 +90,8 @@ class ComponentRegistry
         return selectors;
     }
     
-    // Debug: Print all registered components
-    static void PrintRegistry()
+    // Debug:  DZLog().LogDebug all registered components
+    static void  PrintRegistry()
     {
         DZLog().LogInfo("===== Component Registry =====");
         

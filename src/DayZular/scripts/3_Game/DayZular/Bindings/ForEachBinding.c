@@ -33,25 +33,25 @@ class ForEachBinding extends PropertyBinding
         
         if (!items)
         {
-            Print("ForEachBinding: Array is null for expression: " + m_Expression);
+             DZLog().LogDebug("ForEachBinding: Array is null for expression: " + m_Expression);
             ClearAllComponents();
             return;
         }
         
         int newCount = items.Count();
-        Print("ForEachBinding: Expression=" + m_Expression + " newCount=" + newCount + " lastCount=" + m_LastArrayCount);
+         DZLog().LogDebug("ForEachBinding: Expression=" + m_Expression + " newCount=" + newCount + " lastCount=" + m_LastArrayCount);
         
         // Check if array changed
         if (newCount != m_LastArrayCount)
         {
-            Print("ForEachBinding: Array count changed, rebuilding components");
+             DZLog().LogDebug("ForEachBinding: Array count changed, rebuilding components");
             RebuildComponents(items);
             m_LastArrayCount = newCount;
         }
         else
         {
             // Update existing components with new data
-            Print("ForEachBinding: Array count same, updating existing components");
+             DZLog().LogDebug("ForEachBinding: Array count same, updating existing components");
             UpdateComponents(items);
         }
     }
@@ -105,7 +105,7 @@ class ForEachBinding extends PropertyBinding
     // Rebuild all components
     protected void RebuildComponents(array<Class> items)
     {
-        Print("ForEachBinding: Rebuilding " + items.Count() + " components");
+         DZLog().LogDebug("ForEachBinding: Rebuilding " + items.Count() + " components");
         
         // Clear existing
         ClearAllComponents();
@@ -116,13 +116,13 @@ class ForEachBinding extends PropertyBinding
             CreateComponentForItem(items[i], i);
         }
         
-        Print("ForEachBinding: Finished rebuilding, created " + m_CreatedComponents.Count() + " components");
+         DZLog().LogDebug("ForEachBinding: Finished rebuilding, created " + m_CreatedComponents.Count() + " components");
     }
     
     // Update existing components with new data
     protected void UpdateComponents(array<Class> items)
     {
-        Print("ForEachBinding: Updating " + items.Count() + " existing components");
+         DZLog().LogDebug("ForEachBinding: Updating " + items.Count() + " existing components");
         
         for (int i = 0; i < items.Count() && i < m_CreatedComponents.Count(); i++)
         {
@@ -139,7 +139,7 @@ class ForEachBinding extends PropertyBinding
     // Create component for single item
     protected void CreateComponentForItem(Class item, int index)
     {
-        Print("ForEachBinding: Creating component #" + index + " template=" + m_ComponentTemplate);
+         DZLog().LogDebug("ForEachBinding: Creating component #" + index + " template=" + m_ComponentTemplate);
         
         // Create component via registry
         DZlrComponentBase component = ComponentRegistry.CreateComponent(m_ComponentTemplate);
@@ -166,7 +166,7 @@ class ForEachBinding extends PropertyBinding
         {
             m_Widget.AddChild(component.GetRoot());
             component.GetRoot().Show(true);
-            Print("ForEachBinding: Component #" + index + " added to widget tree");
+             DZLog().LogDebug("ForEachBinding: Component #" + index + " added to widget tree");
         }
         else
         {
