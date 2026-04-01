@@ -120,6 +120,7 @@ class ProgressBinding : WidgetBindingBase
 class ButtonBinding : WidgetBindingBase
 {
     // Visible in Workbench
+    reference string Binding_Text;
     reference string OnClick;
     reference string OnDoubleClick;
     reference string OnMouseEnter;
@@ -128,6 +129,16 @@ class ButtonBinding : WidgetBindingBase
     void ButtonBinding()
     {
         m_Handler = new ButtonBindingHandler(this);
+    }
+    
+    override PropertyBinding CreateDataBinding(Widget widget)
+    {
+        if (Binding_Text && Binding_Text != "")
+        {
+            m_DataBinding = new ButtonTextPropertyBinding(widget, "text", Binding_Text);
+            return m_DataBinding;
+        }
+        return null;
     }
     
     bool HandleOnClick(Widget w, int x, int y, int button)

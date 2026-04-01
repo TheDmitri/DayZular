@@ -333,3 +333,38 @@ class ImagePropertyBinding extends PropertyBinding
         }
     }
 }
+
+// ============================================================================
+// BUTTON TEXT PROPERTY BINDING
+// ============================================================================
+
+class ButtonTextPropertyBinding extends PropertyBinding
+{
+    protected string m_BindingExpression;
+    
+    void ButtonTextPropertyBinding(Widget widget, string propertyName, string expression)
+    {
+        m_Widget = widget;
+        m_PropertyName = propertyName;
+        m_Expression = expression;
+        m_BindingExpression = expression;
+    }
+    
+    override void Update(DZlrComponentBase component)
+    {
+        string value = EvaluateExpression(component, m_BindingExpression);
+        
+        DZLog().LogDebug("[ButtonTextPropertyBinding] Update - Expression: '" + m_BindingExpression + "' -> Value: '" + value + "'");
+        
+        ButtonWidget buttonWidget = ButtonWidget.Cast(m_Widget);
+        if (buttonWidget)
+        {
+            buttonWidget.SetText(value);
+            DZLog().LogDebug("[ButtonTextPropertyBinding] SetText called on button");
+        }
+        else
+        {
+            DZLog().LogWarning("[ButtonTextPropertyBinding] Widget is not a ButtonWidget!");
+        }
+    }
+}

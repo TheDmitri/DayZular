@@ -25,14 +25,14 @@ class DropdownBinding : WidgetBindingBase
     void DropdownBinding()
     {
         m_Handler = new DropdownBindingHandler(this);
-        // DZLog().LogDebug("[DropdownBinding] Handler created");
+        DZLog().LogDebug("[DropdownBinding] Handler created");
     }
     
     override PropertyBinding CreateDataBinding(Widget widget)
     {
         string widgetName = "NULL";
         if (widget) widgetName = widget.GetName();
-        // DZLog().LogDebug("[DropdownBinding] CreateDataBinding called with widget: " + widgetName);
+        DZLog().LogDebug("[DropdownBinding] CreateDataBinding called with widget: " + widgetName);
         
         // Set default widget names if not configured
         if (!Widget_Content || Widget_Content == "") Widget_Content = "dropdownContent";
@@ -40,7 +40,7 @@ class DropdownBinding : WidgetBindingBase
         if (!Widget_Toggle || Widget_Toggle == "") Widget_Toggle = "dropdownToggle";
         if (!Widget_Reset || Widget_Reset == "") Widget_Reset = "dropdownReset";
         
-        // DZLog().LogDebug("[DropdownBinding] Looking for widgets: content=" + Widget_Content + ", value=" + Widget_Value + ", toggle=" + Widget_Toggle);
+        DZLog().LogDebug("[DropdownBinding] Looking for widgets: content=" + Widget_Content + ", value=" + Widget_Value + ", toggle=" + Widget_Toggle);
         
         // Find child widgets by configured names (handle numeric suffixes)
         if (widget)
@@ -87,7 +87,7 @@ class DropdownBinding : WidgetBindingBase
             {
                 resetFound = "YES";
             }
-            // DZLog().LogDebug("[DropdownBinding] Widgets found - dropdownContent: " + contentFound + ", dropdownValue: " + valueFound + ", dropdownReset: " + resetFound);
+            DZLog().LogDebug("[DropdownBinding] Widgets found - dropdownContent: " + contentFound + ", dropdownValue: " + valueFound + ", dropdownReset: " + resetFound);
             
             // Hide content initially
             if (m_DropdownContent)
@@ -102,11 +102,11 @@ class DropdownBinding : WidgetBindingBase
             {
                 toggleFound = "YES";
             }
-            // DZLog().LogDebug("[DropdownBinding] Looking for toggle button, found: " + toggleFound);
+            DZLog().LogDebug("[DropdownBinding] Looking for toggle button, found: " + toggleFound);
             if (toggleBtn && m_Handler)
             {
                 toggleBtn.SetHandler(m_Handler);
-                // DZLog().LogDebug("[DropdownBinding] Handler attached to toggle button");
+                DZLog().LogDebug("[DropdownBinding] Handler attached to toggle button");
             }
         }
         
@@ -114,11 +114,11 @@ class DropdownBinding : WidgetBindingBase
         if (Binding_Items && Binding_Items != "")
         {
             m_DataBinding = new DropdownPropertyBinding(widget, "items", Binding_Items, Binding_Value);
-            // DZLog().LogDebug("[DropdownBinding] CreateDataBinding - created DropdownPropertyBinding");
+            DZLog().LogDebug("[DropdownBinding] CreateDataBinding - created DropdownPropertyBinding");
             return m_DataBinding;
         }
         
-        // DZLog().LogDebug("[DropdownBinding] CreateDataBinding completed - no data binding created (Binding_Items empty)");
+        DZLog().LogDebug("[DropdownBinding] CreateDataBinding completed - no data binding created (Binding_Items empty)");
         return null;
     }
     
@@ -180,7 +180,7 @@ class DropdownBinding : WidgetBindingBase
             // Set defaults if not configured
             if (!Widget_Content || Widget_Content == "") Widget_Content = "dropdownContent";
             
-            // DZLog().LogDebug("[DropdownBinding] Lazy init: finding " + Widget_Content + "...");
+            DZLog().LogDebug("[DropdownBinding] Lazy init: finding " + Widget_Content + "...");
             // Try to find the widget from the handler's widget reference
             if (m_Handler)
             {
@@ -191,7 +191,7 @@ class DropdownBinding : WidgetBindingBase
                     if (widget)
                     {
                         string widgetName = widget.GetName();
-                        // DZLog().LogDebug("[DropdownBinding] Lazy init: found widget " + widgetName);
+                        DZLog().LogDebug("[DropdownBinding] Lazy init: found widget " + widgetName);
                         
                         // Traverse up to find the root dropdown widget
                         // Toggle button is inside: dropdownOutline -> dropdownFrame -> dropdownPrefab
@@ -201,7 +201,7 @@ class DropdownBinding : WidgetBindingBase
                         if (parent) parent = parent.GetParent();  // dropdownPrefab (root)
                         if (parent)
                         {
-                            // DZLog().LogDebug("[DropdownBinding] Lazy init: searching from parent " + parent.GetName());
+                            DZLog().LogDebug("[DropdownBinding] Lazy init: searching from parent " + parent.GetName());
                             
                             // Search for dropdownContent (may have numeric suffix like dropdownContent0)
                             Widget child = parent.GetChildren();
@@ -211,7 +211,7 @@ class DropdownBinding : WidgetBindingBase
                                 if (childName.Contains(Widget_Content))
                                 {
                                     m_DropdownContent = child;
-                                    // DZLog().LogDebug("[DropdownBinding] Lazy init: found dropdownContent: " + childName);
+                                    DZLog().LogDebug("[DropdownBinding] Lazy init: found dropdownContent: " + childName);
                                     break;
                                 }
                                 child = child.GetSibling();
@@ -225,7 +225,7 @@ class DropdownBinding : WidgetBindingBase
                         
                         if (m_DropdownContent)
                         {
-                            // DZLog().LogDebug("[DropdownBinding] Lazy init: found dropdownContent!");
+                            DZLog().LogDebug("[DropdownBinding] Lazy init: found dropdownContent!");
                         }
                     }
                 }
@@ -245,12 +245,12 @@ class DropdownBinding : WidgetBindingBase
             {
                 newVisibleStr = "hidden";
             }
-            // DZLog().LogDebug("[DropdownBinding] ToggleDropdown: currently " + visibleStr + ", toggling to " + newVisibleStr);
+            DZLog().LogDebug("[DropdownBinding] ToggleDropdown: currently " + visibleStr + ", toggling to " + newVisibleStr);
             m_DropdownContent.Show(!isVisible);
         }
         else
         {
-            // DZLog().LogDebug("[DropdownBinding] ToggleDropdown: m_DropdownContent is NULL!");
+            DZLog().LogDebug("[DropdownBinding] ToggleDropdown: m_DropdownContent is NULL!");
         }
     }
     
@@ -338,12 +338,12 @@ class DropdownBindingHandler : ScriptedWidgetEventHandler
     {
         m_Widget = w;
         string widgetName = w.GetName();
-        // DZLog().LogDebug("[DropdownBindingHandler] OnMouseButtonDown: " + widgetName + " button: " + button);
+        DZLog().LogDebug("[DropdownBindingHandler] OnMouseButtonDown: " + widgetName + " button: " + button);
         
         // Handle toggle button (also handle OnClick for regular buttons)
         if (widgetName == "dropdownToggle" || widgetName.Contains("Toggle"))
         {
-            // DZLog().LogDebug("[DropdownBindingHandler] Toggle button clicked, toggling dropdown");
+            DZLog().LogDebug("[DropdownBindingHandler] Toggle button clicked, toggling dropdown");
             if (m_Binding)
             {
                 m_Binding.ToggleDropdown();
@@ -358,12 +358,12 @@ class DropdownBindingHandler : ScriptedWidgetEventHandler
     {
         m_Widget = w;
         string widgetName = w.GetName();
-        // DZLog().LogDebug("[DropdownBindingHandler] OnClick: " + widgetName);
+        DZLog().LogDebug("[DropdownBindingHandler] OnClick: " + widgetName);
         
         // Check for toggle button
         if (widgetName == "dropdownToggle" || widgetName.Contains("Toggle"))
         {
-            // DZLog().LogDebug("[DropdownBindingHandler] Toggle button click event");
+            DZLog().LogDebug("[DropdownBindingHandler] Toggle button click event");
             if (m_Binding)
             {
                 m_Binding.ToggleDropdown();
@@ -374,7 +374,7 @@ class DropdownBindingHandler : ScriptedWidgetEventHandler
         // Check for item click (items should have "dropdownItem" prefix)
         if (widgetName.Contains("dropdownItem"))
         {
-            // DZLog().LogDebug("[DropdownBindingHandler] Item clicked: " + widgetName);
+            DZLog().LogDebug("[DropdownBindingHandler] Item clicked: " + widgetName);
             if (m_Binding)
             {
                 // Extract value from widget user data or name
@@ -387,7 +387,7 @@ class DropdownBindingHandler : ScriptedWidgetEventHandler
         // Check for reset button
         if (widgetName == "dropdownReset" || widgetName.Contains("Reset"))
         {
-            // DZLog().LogDebug("[DropdownBindingHandler] Reset button clicked");
+            DZLog().LogDebug("[DropdownBindingHandler] Reset button clicked");
             if (m_Binding)
             {
                 return m_Binding.HandleReset();
@@ -481,7 +481,7 @@ class DropdownPropertyBinding : PropertyBinding
         Widget content = parent.FindAnyWidget("dropdownItemsContainer");
         string containerFound = "NO";
         if (content) containerFound = "YES";
-        // DZLog().LogDebug("[DropdownBinding] PopulateItemsFromArray - dropdownItemsContainer found: " + containerFound);
+        DZLog().LogDebug("[DropdownBinding] PopulateItemsFromArray - dropdownItemsContainer found: " + containerFound);
         if (!content)
             return;
         
