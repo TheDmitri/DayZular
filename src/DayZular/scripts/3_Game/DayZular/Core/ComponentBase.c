@@ -178,14 +178,14 @@ class DZlrComponentBase extends ScriptedWidgetEventHandler
             if (widgetBinding)
             {
                 widgetBinding.SetComponent(this);
-                
+
                 // Attach event handler if present
                 ScriptedWidgetEventHandler handler = widgetBinding.GetHandler();
                 if (handler)
                 {
                     widget.SetHandler(handler);
                 }
-                
+
                  DZLog().LogDebug("Attached WidgetBinding to widget: " + widget.GetName());
             }
             else

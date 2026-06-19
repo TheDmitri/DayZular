@@ -42,13 +42,13 @@ class WidgetBindingBase : Managed
         {
             return false;
         }
-        
+
         bool result = false;
         if (g_Script.CallFunction(m_Component, methodName, result, null))
         {
             return result;
         }
-        
+
         return false;
     }
 }
@@ -122,10 +122,11 @@ class ButtonBinding : WidgetBindingBase
     // Visible in Workbench
     reference string Binding_Text;
     reference string OnClick;
+    reference string OnRightClick;
     reference string OnDoubleClick;
     reference string OnMouseEnter;
     reference string OnMouseLeave;
-    
+
     void ButtonBinding()
     {
         m_Handler = new ButtonBindingHandler(this);
@@ -149,7 +150,18 @@ class ButtonBinding : WidgetBindingBase
         }
         return TernaryBool(m_Component != null, m_Component.OnClick(w, x, y, button), false);
     }
-    
+
+    // DayZ ButtonWidget OnClick fires for left mouse only; right-click is delivered
+    // through OnMouseButtonDown. Dispatch it to the OnRightClick handler.
+    bool HandleOnMouseButtonDown(Widget w, int x, int y, int button)
+    {
+        if (button == MouseState.RIGHT && OnRightClick && OnRightClick != "")
+        {
+            return InvokeMethod(OnRightClick);
+        }
+        return false;
+    }
+
     bool HandleOnDoubleClick(Widget w, int x, int y, int button)
     {
         if (OnDoubleClick && OnDoubleClick != "")
@@ -191,12 +203,17 @@ class ButtonBindingHandler : ScriptedWidgetEventHandler
     {
         return TernaryBool(m_Binding != null, m_Binding.HandleOnClick(w, x, y, button), false);
     }
-    
+
+    override bool OnMouseButtonDown(Widget w, int x, int y, int button)
+    {
+        return TernaryBool(m_Binding != null, m_Binding.HandleOnMouseButtonDown(w, x, y, button), false);
+    }
+
     override bool OnDoubleClick(Widget w, int x, int y, int button)
     {
         return TernaryBool(m_Binding != null, m_Binding.HandleOnDoubleClick(w, x, y, button), false);
     }
-    
+
     override bool OnMouseEnter(Widget w, int x, int y)
     {
         return TernaryBool(m_Binding != null, m_Binding.HandleOnMouseEnter(w, x, y), false);
@@ -481,15 +498,135 @@ class PlayerPreviewBinding : WidgetBindingBase
 {
     // Visible in Workbench
     reference string Binding_Player;
-    
+    reference int Enable_Rotation;
+    reference int Enable_Scale;
+
+    protected int m_RotX;
+    protected int m_RotY;
+    protected vector m_Orientation;
+    protected float m_Scale;
+    protected PlayerPreviewWidget m_PreviewWidget;
+
     override PropertyBinding CreateDataBinding(Widget widget)
     {
+        m_PreviewWidget = PlayerPreviewWidget.Cast(widget);
+
+        // Attach the drag/scale handler even when the player is set in code
+        // (no Binding_Player), so rotation/scale work either way.
+        if (Enable_Rotation == 1 || Enable_Scale == 1)
+        {
+            m_Orientation = vector.Zero;
+            m_Scale = 0;
+            m_Handler = new PlayerPreviewEventHandler(this, widget);
+        }
+
         if (Binding_Player && Binding_Player != "")
         {
             m_DataBinding = new PlayerPreviewPropertyBinding(widget, "player", Binding_Player);
             return m_DataBinding;
         }
         return null;
+    }
+
+    bool IsRotationEnabled()
+    {
+        return Enable_Rotation == 1;
+    }
+
+    bool IsScaleEnabled()
+    {
+        return Enable_Scale == 1;
+    }
+
+    void UpdateRotation(int mouse_x, int mouse_y, bool is_dragging)
+    {
+        if (!IsRotationEnabled() || !m_PreviewWidget)
+            return;
+
+        vector orientation = m_Orientation;
+        orientation[0] = orientation[0] + (m_RotY - mouse_y);
+        orientation[1] = orientation[1] - (m_RotX - mouse_x);
+
+        m_PreviewWidget.SetModelOrientation(orientation);
+
+        if (!is_dragging)
+            m_Orientation = orientation;
+    }
+
+    void UpdateScale(int wheel, PlayerPreviewWidget preview)
+    {
+        if (!IsScaleEnabled() || !preview)
+            return;
+
+        float w, h, x, y;
+        preview.GetPos(x, y);
+        preview.GetSize(w, h);
+
+        float oldW = w;
+        float oldH = h;
+
+        m_Scale = wheel;
+        w = w + (m_Scale / 4);
+        h = h + (m_Scale / 4);
+
+        if (w > 0.5 && w < 3)
+        {
+            float deltaW = w - oldW;
+            float deltaH = h - oldH;
+
+            preview.SetSize(w, h);
+
+            float new_x = x - (deltaW / 2);
+            float new_y = y - (deltaH / 2);
+            preview.SetPos(new_x, new_y);
+        }
+    }
+
+    void SetRotationStart(int x, int y)
+    {
+        m_RotX = x;
+        m_RotY = y;
+    }
+}
+
+// Event handler for PlayerPreview rotation and scale
+class PlayerPreviewEventHandler : ScriptedWidgetEventHandler
+{
+    protected PlayerPreviewBinding m_Binding;
+    protected PlayerPreviewWidget m_Preview;
+
+    void PlayerPreviewEventHandler(PlayerPreviewBinding binding, Widget widget)
+    {
+        m_Binding = binding;
+        m_Preview = PlayerPreviewWidget.Cast(widget);
+
+        if (m_Preview)
+        {
+            m_Preview.SetHandler(this);
+        }
+    }
+
+    override bool OnMouseButtonDown(Widget w, int x, int y, int button)
+    {
+        if (!m_Binding || !m_Binding.IsRotationEnabled() || w != m_Preview)
+            return false;
+
+        GetGame().GetDragQueue().Call(m_Binding, "UpdateRotation");
+
+        int mouse_x, mouse_y;
+        GetMousePos(mouse_x, mouse_y);
+        m_Binding.SetRotationStart(mouse_x, mouse_y);
+
+        return true;
+    }
+
+    override bool OnMouseWheel(Widget w, int x, int y, int wheel)
+    {
+        if (!m_Binding || !m_Binding.IsScaleEnabled() || w != m_Preview)
+            return false;
+
+        m_Binding.UpdateScale(wheel, m_Preview);
+        return true;
     }
 }
 

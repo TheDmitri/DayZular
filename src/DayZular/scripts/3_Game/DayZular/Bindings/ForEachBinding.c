@@ -10,7 +10,12 @@ class ForEachBinding extends PropertyBinding
     protected DZlrComponentBase m_ParentComponent;
     
     protected int m_LastArrayCount = 0;
-    
+
+    // Guards against reentrancy: a child component created during a rebuild can fire
+    // an event that calls MarkForCheck on the parent, which re-runs this binding's
+    // Update while RebuildComponents is still mid-loop — producing duplicate widgets.
+    protected bool m_Rebuilding = false;
+
     // Constructor matches PropertyBinding signature, then adds extra params
     void ForEachBinding(Widget widget, string propertyName, string expression, string componentTemplate, string itemProperty, DZlrComponentBase parent)
     {
@@ -27,7 +32,11 @@ class ForEachBinding extends PropertyBinding
     {
         if (!m_Widget || !component)
             return;
-        
+
+        // Ignore updates triggered re-entrantly while a rebuild is in progress.
+        if (m_Rebuilding)
+            return;
+
         // Evaluate expression to get array
         array<Class> items = GetArrayFromExpression(component, m_Expression);
         
@@ -40,7 +49,7 @@ class ForEachBinding extends PropertyBinding
         
         int newCount = items.Count();
          DZLog().LogDebug("ForEachBinding: Expression=" + m_Expression + " newCount=" + newCount + " lastCount=" + m_LastArrayCount);
-        
+
         // Check if array changed
         if (newCount != m_LastArrayCount)
         {
@@ -106,16 +115,20 @@ class ForEachBinding extends PropertyBinding
     protected void RebuildComponents(array<Class> items)
     {
          DZLog().LogDebug("ForEachBinding: Rebuilding " + items.Count() + " components");
-        
+
+        m_Rebuilding = true;
+
         // Clear existing
         ClearAllComponents();
-        
+
         // Create new components
         for (int i = 0; i < items.Count(); i++)
         {
             CreateComponentForItem(items[i], i);
         }
-        
+
+        m_Rebuilding = false;
+
          DZLog().LogDebug("ForEachBinding: Finished rebuilding, created " + m_CreatedComponents.Count() + " components");
     }
     
