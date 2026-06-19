@@ -135,10 +135,13 @@ ButtonWidgetClass buy_button {
     {
         ScriptParamsClass {
             OnClick "OnBuyClick"
+            OnRightClick "OnBuyContextMenu"
         }
     }
 }
 ```
+
+`ButtonBinding` supports `OnClick`, `OnRightClick`, `OnDoubleClick`, `OnMouseEnter`, and `OnMouseLeave`. Right-click is delivered through `OnMouseButtonDown` (DayZ `ButtonWidget.OnClick` fires for left mouse only).
 
 ### EditBox Binding (Data + Validation)
 
@@ -191,7 +194,9 @@ WrapSpacerWidgetClass products_list {
 - **CheckBoxBinding** — `Binding_Checked`, `OnCheckChanged`
 - **SliderBinding** — `Binding_Value`, `OnSliderChange`
 - **ItemPreviewBinding** — `Binding_Item`
-- **PlayerPreviewBinding** — `Binding_Player`
+- **PlayerPreviewBinding** — `Binding_Player`, `Enable_Rotation`, `Enable_Scale`
+
+`PlayerPreviewBinding` supports interactive controls: set `Enable_Rotation 1` to drag-rotate the model and `Enable_Scale 1` to zoom with the mouse wheel. These work whether the player is set via `Binding_Player` or assigned in code.
 
 ---
 

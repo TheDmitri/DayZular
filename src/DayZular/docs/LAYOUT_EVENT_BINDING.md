@@ -15,6 +15,7 @@ class ComponentEventBinding : Managed
 {
     // These fields appear in Workbench layout editor!
     reference string OnClick;
+    reference string OnRightClick;
     reference string OnDoubleClick;
     reference string OnMouseEnter;
     reference string OnMouseLeave;
@@ -38,7 +39,7 @@ The `ComponentEventBinding` class is a `Managed` class that:
 
 ### 1. In Your Layout File
 
-For buttons, use `scriptclass "ButtonBinding"` which provides `OnClick` and `OnMouseEnter`/`OnMouseLeave` fields:
+For buttons, use `scriptclass "ButtonBinding"` which provides `OnClick`, `OnRightClick`, `OnDoubleClick`, `OnMouseEnter`, and `OnMouseLeave` fields:
 
 ```
 ButtonWidgetClass buy_button {
@@ -46,10 +47,13 @@ ButtonWidgetClass buy_button {
   {
     ScriptParamsClass {
       OnClick "OnBuyClick"
+      OnRightClick "OnBuyContextMenu"
     }
   }
 }
 ```
+
+> **Note:** DayZ `ButtonWidget.OnClick` fires for the left mouse button only. `OnRightClick` is dispatched through `OnMouseButtonDown` when the right button is pressed.
 
 For other widgets needing event handling, `ComponentEventBinding` is attached automatically by `ComponentBase` during `InitComponent()` to any widget with the appropriate scriptclass.
 
@@ -78,7 +82,8 @@ You can bind any of these events in your layout:
 
 | Layout Field | Widget Event | Method Signature |
 |--------------|--------------|------------------|
-| `OnClick` | Button click | `void MethodName()` or `bool MethodName(ClickEventArgs args)` |
+| `OnClick` | Button click (left) | `void MethodName()` or `bool MethodName(ClickEventArgs args)` |
+| `OnRightClick` | Button click (right) | `void MethodName()` or `bool MethodName(ClickEventArgs args)` |
 | `OnDoubleClick` | Double click | `void MethodName()` or `bool MethodName(ClickEventArgs args)` |
 | `OnMouseEnter` | Mouse enter | `void MethodName()` or `bool MethodName(MouseEventArgs args)` |
 | `OnMouseLeave` | Mouse leave | `void MethodName()` or `bool MethodName(MouseEventArgs args)` |

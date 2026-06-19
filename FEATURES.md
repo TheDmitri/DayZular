@@ -125,16 +125,39 @@ string GetCounterText()
 Bind widget events to component methods:
 ```xml
 <ButtonWidgetClass my_button {
-    scriptclass "EventBinding"
+    scriptclass "ButtonBinding"
     {
         ScriptParamsClass {
-            Event_Click "OnButtonClick"
-            Event_MouseEnter "OnMouseEnter"
-            Event_MouseLeave "OnMouseLeave"
+            OnClick "OnButtonClick"
+            OnRightClick "OnButtonRightClick"
+            OnDoubleClick "OnButtonDoubleClick"
+            OnMouseEnter "OnMouseEnter"
+            OnMouseLeave "OnMouseLeave"
         }
     }
 }
 ```
+
+`OnRightClick` is delivered through `OnMouseButtonDown` (DayZ `ButtonWidget.OnClick` fires for the left mouse button only).
+
+### Player Preview Controls
+`PlayerPreviewBinding` supports interactive rotation and zoom:
+```xml
+<PlayerPreviewWidgetClass player_preview {
+    scriptclass "PlayerPreviewBinding"
+    {
+        ScriptParamsClass {
+            Binding_Player "previewPlayer"
+            Enable_Rotation 1
+            Enable_Scale 1
+        }
+    }
+}
+```
+- `Enable_Rotation 1` — drag the model to rotate it
+- `Enable_Scale 1` — mouse wheel to zoom in/out
+
+Controls work whether the player is set via `Binding_Player` or assigned in code.
 
 ### ForEach Binding
 Repeat widgets from collections:

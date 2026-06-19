@@ -73,7 +73,7 @@
 
 ### Version Information
 - [x] Version: 2.0.0
-- [x] Author: TheDmitri (RazBentley)
+- [x] Author: TheDmitri
 - [x] Dependencies: None (pure DayZ)
 - [x] Compatible with: CF, DabsFramework
 
