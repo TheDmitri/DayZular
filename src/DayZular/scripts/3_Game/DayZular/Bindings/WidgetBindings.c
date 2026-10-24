@@ -144,6 +144,12 @@ class ButtonBinding : WidgetBindingBase
     
     bool HandleOnClick(Widget w, int x, int y, int button)
     {
+        // Some DayZ builds raise OnClick for the RIGHT button too. Route only the
+        // LEFT button to the OnClick handler; right-click is dispatched separately
+        // via OnRightClick in HandleOnMouseButtonDown. This keeps left/right bindings
+        // independent centrally, with no per-component suppress flags.
+        if (button == MouseState.RIGHT)
+            return false;
         if (OnClick && OnClick != "")
         {
             return InvokeMethod(OnClick);
@@ -152,12 +158,16 @@ class ButtonBinding : WidgetBindingBase
     }
 
     // DayZ ButtonWidget OnClick fires for left mouse only; right-click is delivered
-    // through OnMouseButtonDown. Dispatch it to the OnRightClick handler.
+    // through OnMouseButtonDown. Dispatch it to the OnRightClick handler and CONSUME
+    // the event (return true) so it does not bubble to a parent widget. A void
+    // OnRightClick handler makes InvokeMethod return false, which would otherwise
+    // leave the event unhandled and let a parent (e.g. a selection panel) react too.
     bool HandleOnMouseButtonDown(Widget w, int x, int y, int button)
     {
         if (button == MouseState.RIGHT && OnRightClick && OnRightClick != "")
         {
-            return InvokeMethod(OnRightClick);
+            InvokeMethod(OnRightClick);
+            return true;
         }
         return false;
     }
@@ -544,7 +554,8 @@ class PlayerPreviewBinding : WidgetBindingBase
             return;
 
         vector orientation = m_Orientation;
-        orientation[0] = orientation[0] + (m_RotY - mouse_y);
+        // Y-axis (yaw) only — horizontal drag spins the model; vertical drag is ignored
+        // so the model can't be tilted/flipped on the X axis.
         orientation[1] = orientation[1] - (m_RotX - mouse_x);
 
         m_PreviewWidget.SetModelOrientation(orientation);

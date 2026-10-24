@@ -158,6 +158,11 @@ class ItemPreviewPropertyBinding extends PropertyBinding
             if (item)
             {
                 preview.SetItem(item);
+                // Without SetView the widget renders view index 0, which on an
+                // entity carrying attachments resolves to a child's view - a
+                // scoped rifle draws as its optic. GetViewIndex() picks the
+                // entity's own inventory view, same as the vanilla UI does.
+                preview.SetView(item.GetViewIndex());
                 preview.SetModelOrientation(vector.Zero);
             }
         }

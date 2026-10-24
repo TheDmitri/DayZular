@@ -24,6 +24,9 @@ class CfgMods
 		version="2.0";
 		extra=0;
 		type="mod";
+		// Lets mods that bundle a copy of DayZular (TraderX: TraderXDayZular) compile that copy
+		// out with #ifndef DAYZULAR when this standalone mod is loaded. Keep it.
+		defines[]={"DAYZULAR"};
 		dependencies[]=
 		{
 			"Game",
